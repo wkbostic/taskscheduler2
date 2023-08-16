@@ -1,0 +1,7 @@
+Kristian Bostic, 3687104755
+Vy Ho, 8939036751
+Max Ginsberg, 2358195358
+
+Our design used multiple layers of FIFOs to segment the main 16 location buffer into four groups, each representing different transaction IDs. The first FIFO was a buffer that contained the opcodes and data for each task. Instead of removing data from the buffer, data is "consumed" by incrementing the read pointer for the corresponding transaction ID to the next position in its position FIFO. Data is removed once a task is completed to signal the testbench to send a new randomly generated command. Subqueues are used to hold the positions of each task in the main FIFO, with the read pointer also advancing each time a task is completed. Each clock, the position is read from the subqueue and if necessary, a new task from the testbench is implemented into the queue. In the next clock, the task is processed. Tasks are integrated in the NOT_FULL state until the main buffer is full. When the main buffer is full, tasks start to be processed and the FSM operates in the FULL state until it can free up room for new tasks. The test bench is designed to continue processing random tasks like this indefinitely. Every time the buffer changes, its contents and pointer locations are printed. Every time a component is ready to take a new task, a ready is printed. Every time a component takes a new task or a task is completed, a message is printed. 
+
+No changes made to master and slave
